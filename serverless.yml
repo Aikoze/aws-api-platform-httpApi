@@ -1,0 +1,49 @@
+app: app-service
+service: reproducer
+
+provider:
+  name: aws
+  region: eu-west-3
+  stage: dev
+  runtime: provided.al2
+  environment:
+    APP_ENV: prod
+
+plugins:
+  - ./vendor/bref/bref
+  - serverless-lift
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!api/tests/**'
+    - '!api/node_modules/**'
+    - '!api/var/cache/**'
+    - '!api/var/log/**'
+    - '!client/**'
+
+functions:
+  backend:
+    handler: api/public/index.php
+    timeout: 28
+    layers:
+      - ${bref:layer.php-80-fpm}
+    events:
+      - httpApi: '*'
+
+constructs:
+  client:
+    type: static-website
+    path: client/build
+    domain: front.domain.com
+    certificate: myarn
+
+  website:
+    type: server-side-website
+    assets:
+      '/bundles/*': api/public/bundles
+      '/.htaccess': api/public/.htaccess
+      '/index.php': api/public/index.php
+    domain: backend.domain.com
+    certificate: myarn
+

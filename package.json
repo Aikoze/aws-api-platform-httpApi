@@ -1,0 +1,9 @@
+{
+  "name": "reproducer-api",
+  "description": "",
+  "version": "0.1.0",
+  "devDependencies": {
+    "serverless": "^2.59.0",
+    "serverless-lift": "^1.7.0"
+  }
+}
